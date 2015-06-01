@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package>
+  <name>nmea_parsing_node</name>
+  <version>1.0.0</version>
+  <description>Provides a C++ skeleton for creating nodes that parse NMEA messages. Can read from serial or TCP port.</description>
+  <maintainer email="heidarss@usc.edu">Hordur Heidarsson</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>boost</build_depend>
+  <run_depend>roscpp</run_depend>
+  <export>
+  </export>
+</package>
