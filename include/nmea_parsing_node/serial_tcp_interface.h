@@ -9,6 +9,7 @@
 #define SERIAL_TCP_INTERFACE_H_
 
 #include <string>
+#include <boost/scoped_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <boost/lexical_cast.hpp>
