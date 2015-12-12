@@ -101,14 +101,16 @@ bool verifyChkSum(string seq)
 
 }
 
-bool parseSeq(string seq, string& id, vector<string>& values)
+bool parseSeq(string seq, string& id, vector<string>& values, bool useCheckSum)
 {
 
   if(!verifyFormat(seq)) {
+    //cout << "invalid format" << endl;
     return false;
   }
 
-  if(!verifyChkSum(seq)) {
+  if(useCheckSum && !verifyChkSum(seq)) {
+    //cout << "invalid checksum" << endl;
     return false;
   }
 
@@ -132,8 +134,8 @@ struct NmeaMessage
   }
 };
 
-bool parseSeq(string seq,NmeaMessage& msg) {
-  return parseSeq(seq,msg.command,msg.data);
+bool parseSeq(string seq,NmeaMessage& msg,bool useCheckSum) {
+  return parseSeq(seq,msg.command,msg.data, useCheckSum);
 }
 
 std::string trim(const std::string &str)
@@ -173,9 +175,12 @@ protected:
 
   bool kill;
 
+  bool useCheckSum;
+
 public:
-  NmeaParsingNode() : privnode("~"), serial_port(""), baud_rate(0), tcp_hostname(""), tcp_port(0), mode("")
+  NmeaParsingNode() : privnode("~"), serial_port(""), baud_rate(0), tcp_hostname(""), tcp_port(0), mode(""), useCheckSum(true)
   {
+ 
     privnode.getParam("mode",mode);
     privnode.getParam("serial_port",serial_port);
     privnode.getParam("hostname",tcp_hostname);
@@ -211,7 +216,7 @@ public:
 
   bool run()
   {
-    cout << "Running" << endl;
+    //cout << "Running" << endl;
     if (kill) {
       return false;
     }
@@ -267,8 +272,8 @@ private:
   bool processLine(string line) {
     NmeaMessage msg;
     msg.time = ros::Time::now();
-    bool res = parseSeq(line,msg);
-    //cout << "processLine(" << line << ")" << endl;
+    bool res = parseSeq(line,msg,useCheckSum);
+    //cout << "processLine(" << line << ")=" << res << endl;
     if(res) {
       boost::mutex::scoped_lock lk(q_mutex);
       q.push(msg);
@@ -301,6 +306,7 @@ private:
     while(ros::ok() && !kill)
     {
       string line = iface->readLine();
+      //cout << line << endl;
       if(line.length() > 0) {
         processLine(line);
       }
